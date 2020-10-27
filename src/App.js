@@ -1,5 +1,6 @@
 import { useEffect } from "react";
-import CounrtyComparisonChart from "./Components/CounrtyComparisonChart";
+import CounrtyComparisonChart from "./Components/CountryComparison/CounrtyComparisonChart";
+import ConfirmedCasesPerDay from "./Components/ConfirmedCasesPerDay/ConfirmedCasesPerDay";
 import { readString } from "react-papaparse";
 import { useRecoilState, useRecoilValue } from "recoil";
 import {
@@ -10,14 +11,7 @@ import {
 
 function App() {
 	const [countriesData, setCountriesData] = useRecoilState(countriesDataState);
-	const [selectedCountriesNames, setSelectedCountriesNames] = useRecoilState(
-		selectedCountriesNamesState
-	);
-
-	// console.log(countriesData);
-	console.log(selectedCountriesNames);
 	console.log(countriesData);
-	// console.log(countriesData[selectedCountries[0]]);
 
 	useEffect(() => {
 		(async () => {
@@ -45,34 +39,10 @@ function App() {
 		})();
 	}, []);
 
-	function handleAddCountryLine(countryName) {
-		setSelectedCountriesNames(array => [...array, countryName]);
-	}
-	function removeCountryFromSelected(countryName) {
-		setSelectedCountriesNames(array =>
-			array.filter(name => (name !== countryName ? name : undefined))
-		);
-	}
-
 	return (
 		<div className="App">
-			<select
-				// value={selectedCountry}
-				onChange={({ target: { value } }) => handleAddCountryLine(value)}>
-				{Object.keys(countriesData).map((key, i) => (
-					<option key={i} disabled={selectedCountriesNames.includes(key)}>
-						{key}
-					</option>
-				))}
-			</select>
-			<ul>
-				{selectedCountriesNames.map(name => (
-					<li key={name} onClick={() => removeCountryFromSelected(name)}>
-						{name}
-					</li>
-				))}
-			</ul>
 			<CounrtyComparisonChart />
+			<ConfirmedCasesPerDay />
 		</div>
 	);
 }

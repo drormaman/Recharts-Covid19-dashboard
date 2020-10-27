@@ -5,32 +5,73 @@ export const countriesDataState = atom({
 	default: {}
 });
 
+export const countriesNamesState = selector({
+	key: "countriesNamesState",
+	get: ({ get }) => {
+		const countries = get(countriesDataState);
+		return Object.keys(countries);
+	}
+});
+
 export const selectedCountriesDataState = selector({
 	key: "selectedCountriesDataState",
 	get: ({ get }) => {
 		const allData = get(countriesDataState);
-		console.log(allData);
 		const selectedCountries = get(selectedCountriesNamesState);
-		console.log(selectedCountries);
-		if (Object.keys(allData).length > 0) {
-			if (selectedCountries.length < 1) {
-				return [];
-			} else {
-				const datesArray = Object.keys(allData[selectedCountries[0]]);
-				return datesArray.map(date => {
-					const dateObj = { date };
-					for (let i = 0; i < selectedCountries.length; i++) {
-						dateObj[selectedCountries[i]] = allData[selectedCountries[i]][date];
-					}
-					return dateObj;
-				});
-			}
+		if (selectedCountries.length < 1) {
+			return [];
+		} else {
+			const datesArray = Object.keys(allData[selectedCountries[0]]);
+			return datesArray.map(date => {
+				const dateObj = { date };
+				for (let i = 0; i < selectedCountries.length; i++) {
+					dateObj[selectedCountries[i]] = allData[selectedCountries[i]][date];
+				}
+				return dateObj;
+			});
 		}
-		return ["hey"];
 	}
 });
 
 export const selectedCountriesNamesState = atom({
 	key: "selectedCountriesNamesState",
 	default: []
+});
+
+export const perDayChartCountryState = atom({
+	key: "perDayChartCountryState",
+	default: ""
+});
+export const perDayChartMonthState = atom({
+	key: "perDayChartMonthState",
+	default: ""
+});
+
+export const perDayChartDataState = selector({
+	key: "perDayChartDataState",
+	get: ({ get }) => {
+		const country = get(perDayChartCountryState);
+		const month = get(perDayChartMonthState);
+		const allData = get(countriesDataState);
+
+		if (country && month) {
+			const countryData = Object.keys(allData[country]).map(
+				(dateKey, i, array) => {
+					if (i < 1) {
+						return { date: dateKey, confirmedCases: allData[country][dateKey] };
+					} else {
+						return {
+							date: dateKey,
+							confirmedCases:
+								allData[country][dateKey] - allData[country][array[i - 1]]
+						};
+					}
+				}
+			);
+			return countryData.filter(
+				dateObj => dateObj.date.indexOf(`${month}/`) === 0
+			);
+		}
+		return [];
+	}
 });
