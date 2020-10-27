@@ -1,13 +1,5 @@
-import { useState, useEffect } from "react";
-import {
-	LineChart,
-	Line,
-	CartesianGrid,
-	XAxis,
-	YAxis,
-	Tooltip,
-	Legend
-} from "recharts";
+import { useEffect } from "react";
+import CounrtyComparisonChart from "./Components/CounrtyComparisonChart";
 import { readString } from "react-papaparse";
 import { useRecoilState, useRecoilValue } from "recoil";
 import {
@@ -16,18 +8,14 @@ import {
 	selectedCountriesDataState
 } from "./Atoms/recoilAtoms";
 
-const colors = ["#111d5e", "#c70039", "#f37121", "#ffbd69", "#0e918c"];
-
 function App() {
 	const [countriesData, setCountriesData] = useRecoilState(countriesDataState);
 	const [selectedCountriesNames, setSelectedCountriesNames] = useRecoilState(
 		selectedCountriesNamesState
 	);
 
-	const selectedCountriesData = useRecoilValue(selectedCountriesDataState);
 	// console.log(countriesData);
 	console.log(selectedCountriesNames);
-	console.log(selectedCountriesData);
 	console.log(countriesData);
 	// console.log(countriesData[selectedCountries[0]]);
 
@@ -84,23 +72,7 @@ function App() {
 					</li>
 				))}
 			</ul>
-			<LineChart width={600} height={300} data={selectedCountriesData}>
-				<Tooltip />
-				<Legend />
-				{selectedCountriesNames.map((name, i) => (
-					<Line
-						type="natural"
-						// legendType="none"
-						dot={false}
-						key={name}
-						dataKey={name}
-						stroke={colors[i]}
-					/>
-				))}
-				<CartesianGrid stroke="#ccc" />
-				<XAxis dataKey="date" />
-				<YAxis />
-			</LineChart>
+			<CounrtyComparisonChart />
 		</div>
 	);
 }
