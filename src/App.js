@@ -9,16 +9,26 @@ import {
 	Legend
 } from "recharts";
 import { readString } from "react-papaparse";
+import { useRecoilState, useRecoilValue } from "recoil";
+import {
+	countriesDataState,
+	selectedCountriesNamesState,
+	selectedCountriesDataState
+} from "./Atoms/recoilAtoms";
 
 const colors = ["#111d5e", "#c70039", "#f37121", "#ffbd69", "#0e918c"];
 
 function App() {
-	const [countriesData, setCountriesData] = useState({});
-	const [selectedCountriesNames, setSelectedCountriesNames] = useState([]);
-	const [selectedCountriesData, setSelectedCountriesData] = useState([]);
+	const [countriesData, setCountriesData] = useRecoilState(countriesDataState);
+	const [selectedCountriesNames, setSelectedCountriesNames] = useRecoilState(
+		selectedCountriesNamesState
+	);
+
+	const selectedCountriesData = useRecoilValue(selectedCountriesDataState);
 	// console.log(countriesData);
 	console.log(selectedCountriesNames);
 	console.log(selectedCountriesData);
+	console.log(countriesData);
 	// console.log(countriesData[selectedCountries[0]]);
 
 	useEffect(() => {
@@ -30,7 +40,6 @@ function App() {
 			const { data } = readString(responseData, { header: true });
 
 			const formattedData = {};
-			const datesArr = [];
 			data.map((country, i) => {
 				const name = country["Province/State"]
 					? country["Province/State"] + ", " + country["Country/Region"]
@@ -40,36 +49,20 @@ function App() {
 					if (/\d{1,2}\/\d{1,2}\/\d{1,2}/.test(key)) {
 						// value.push({ date: key, confirmedCases: Number(country[key]) });
 						value[key] = Number(country[key]);
-						if (i === 0) datesArr.push({ date: key });
 					}
 				}
 				formattedData[name] = value;
 			});
 			setCountriesData(formattedData);
-			setSelectedCountriesData(datesArr);
 		})();
 	}, []);
 
 	function handleAddCountryLine(countryName) {
 		setSelectedCountriesNames(array => [...array, countryName]);
-		// setSelectedCountries(countryName);
-
-		const data = selectedCountriesData.map(dateObj => ({
-			...dateObj,
-			[countryName]: countriesData[countryName][dateObj.date]
-		}));
-		setSelectedCountriesData(data);
 	}
 	function removeCountryFromSelected(countryName) {
 		setSelectedCountriesNames(array =>
 			array.filter(name => (name !== countryName ? name : undefined))
-		);
-		setSelectedCountriesData(array =>
-			array.map(dateObj => {
-				const tempObj = dateObj;
-				delete tempObj[countryName];
-				return tempObj;
-			})
 		);
 	}
 
