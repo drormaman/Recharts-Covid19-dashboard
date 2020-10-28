@@ -32,6 +32,9 @@ function CountryChooser() {
 					</option>
 				))}
 			</select>
+			{selectedCountriesNames.length > 0 && (
+				<span>click on a country name to remove it</span>
+			)}
 			<ul>
 				{selectedCountriesNames.map(name => (
 					<li key={name} onClick={() => removeCountryFromSelected(name)}>
